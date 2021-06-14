@@ -18,14 +18,17 @@ public class Token {
        this.resourcePermMap = permMap;
     }
 
-    public boolean authorize(Resource resource, Ops ops, String userId) {
-
-       if (this.userId.compareToIgnoreCase(userId) != 0) {
-           return false;
-
-        }
+    public boolean authorize(Resource resource, Ops ops) {
 
        final Permission permission = resourcePermMap.get(resource);
        return permission == null? false : permission.authorize(ops);
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public IAMRole getIamRole() {
+        return this.iamRole;
     }
 }

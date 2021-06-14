@@ -1,7 +1,12 @@
 package service;
 
 import model.User;
+import security.Ops;
+import security.Resource;
+import store.DoctorPatientStore;
 import store.UserStore;
+import security.Token;
+import security.IAMRole;
 
 /**
  *   User Service
@@ -26,8 +31,14 @@ public class UserService {
      * @param userId
      * @return
      */
-    public static User retrieveUser(String userId) {
-        return UserStore.retrieveUser(userId);
+    public static User retrieveUser(Token token, String userId) {
+
+        if (isPermitted(token, userId, Ops.RETRIEVE)) {
+            return UserStore.retrieveUser(userId);
+        }
+
+        return null;
+
     }
 
     /**
@@ -36,9 +47,34 @@ public class UserService {
      * @param user
      * @return
      */
-    public static boolean updateUser(User user, String password) {
-        return UserStore.updateUser(user, password);
+    public static boolean updateUser(Token token, User user, String password) {
+
+        if (isPermitted(token, user.getUserId(), Ops.RETRIEVE)) {
+            return UserStore.updateUser(user, password);
+        }
+
+        return false;
     }
 
-    //public static
+    /**
+     *
+     * @param token
+     * @param userId
+     * @return
+     */
+    private static boolean isPermitted(Token token, String userId, Ops ops) {
+
+        if (!token.authorize(Resource.PROVIDER_PATIENT, ops)) {
+            return false;
+        }
+
+        // patient/doctor is allowed for their own records
+        if (userId.compareToIgnoreCase(token.getUserId()) == 0) {
+            return true;
+        }
+
+        // doctor is allowed on her patient's
+        return token.getIamRole().equals(IAMRole.DOCTOR) &&
+               DoctorPatientStore.IsDocPatient(token.getUserId(), userId);
+    }
 }

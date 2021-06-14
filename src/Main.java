@@ -1,9 +1,6 @@
-import model.Gender;
-import model.User;
-import security.IAMRole;
-import security.IAMService;
-import service.UserService;
-import security.Token;
+import model.*;
+import security.*;
+import service.*;
 
 import java.util.Date;
 import static org.junit.Assert.*;
@@ -14,11 +11,11 @@ import static org.junit.Assert.*;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
-
         testCreatePatient();
         testCreateProvider();
         testLogin();
+        testAddPatient();
+        testRetrieveUpdatePatient();
     }
 
 
@@ -60,81 +57,107 @@ public class Main {
      *
      */
 
-    private static Token tokenPatientOne;
-    private static User userPatientOne;
-    private static final String userPatientOneId = "patientOne";
-    private static final String userPatientOnePW = "patOnePass";
+    private static Token tokenPatient1;
+    private static User userPatient1;
+    private static final String userPatientId1 = "patientOne";
+    private static final String userPatientPW1 = "patOnePass";
 
-    private static Token tokenPatientTwo;
-    private static User userPatientTwo;
-    private static final String userPatientTwoId = "patientTwo";
-    private static final String userPatientTwoPW = "patTwoPass";
+    private static Token tokenPatient2;
+    private static User userPatient2;
+    private static final String userPatientId2 = "patientTwo";
+    private static final String userPatientPW2 = "patTwoPass";
 
-    private static Token tokenDoctorOne;
-    private static User userDoctorOne;
-    private static final String userDoctorOneId = "doctorOne";
-    private static final String userDoctorOnePW = "docOnePass";
+    private static Token tokenDoctor1;
+    private static User userDoctor1;
+    private static final String userDoctorId1 = "doctorOne";
+    private static final String userDoctorPW1 = "docOnePass";
 
-    private static Token tokenDoctorTwo;
-    private static User userDoctorTwo;
-    private static final String userDoctorTwoId = "doctorTwo";
-    private static final String userDoctorTwoPW = "docTwoPass";
+    private static Token tokenDoctor2;
+    private static User userDoctor2;
+    private static final String userDoctorId2 = "doctorTwo";
+    private static final String userDoctorPW2 = "docTwoPass";
 
     public static void testCreatePatient() {
 
         System.out.println("testCreatePatient");
 
-        userPatientOne = new User(userPatientOneId, "Patient", "One" , IAMRole.PATIENT,
+        userPatient1 = new User(userPatientId1, "Patient", "One" , IAMRole.PATIENT,
                 Gender.MALE, new Date(1992, 1, 1), "206-456-1111", "patientone@yahoo.com",
                 "1110 234TH PL SE Bellevue WA 98006");
         //Allow create once
-        assertTrue(UserService.createUser(userPatientOne, userPatientOnePW));
-        assertFalse(UserService.createUser(userPatientOne, userPatientOnePW));
+        assertTrue(UserService.createUser(userPatient1, userPatientPW1));
+        assertFalse(UserService.createUser(userPatient1, userPatientPW1));
 
-        userPatientTwo = new User("patientTwo", "Patient", "Two", IAMRole.PATIENT,
+        userPatient2 = new User("patientTwo", "Patient", "Two", IAMRole.PATIENT,
                 Gender.MALE, new Date(1993, 1, 1), "206-456-2222", "patientTwo@yahoo.com",
                 "1110 234TH PL SE Bellevue WA 98006");
         //Allow create once
-        assertTrue(UserService.createUser(userPatientTwo, userPatientTwoPW));
-        assertFalse(UserService.createUser(userPatientTwo, userPatientTwoPW));
+        assertTrue(UserService.createUser(userPatient2, userPatientPW2));
+        assertFalse(UserService.createUser(userPatient2, userPatientPW2));
     }
 
      public static void testCreateProvider() {
         System.out.println("testCreateProvider");
 
-        userDoctorOne = new User(userDoctorOneId, "Doctor", "One", IAMRole.DOCTOR,
+        userDoctor1 = new User(userDoctorId1, "Doctor", "One", IAMRole.DOCTOR,
                                   Gender.MALE, new Date(1991, 1, 1),"206-123-1111", "doctorOne@yahoo.com",
                    "1110 234TH PL SE Bellevue WA 98006");
          //Allow create once
-        assertTrue(UserService.createUser(userDoctorOne, userDoctorOnePW));
-        assertFalse(UserService.createUser(userDoctorOne, userDoctorOnePW));
+        assertTrue(UserService.createUser(userDoctor1, userDoctorPW1));
+        assertFalse(UserService.createUser(userDoctor1, userDoctorPW1));
 
-        userDoctorTwo = new User(userDoctorTwoId,"Doctor", "Two", IAMRole.DOCTOR,
+        userDoctor2 = new User(userDoctorId2,"Doctor", "Two", IAMRole.DOCTOR,
                 Gender.MALE, new Date(1991,1,2), "206-123-2222", "doctorTwo@yahoo.com",
                 "1110 234TH PL SE Bellevue WA 98006");
          //Allow create once
-        assertTrue(UserService.createUser(userDoctorTwo, userDoctorTwoPW));
-        assertFalse(UserService.createUser(userDoctorTwo, userDoctorTwoPW ));
+        assertTrue(UserService.createUser(userDoctor2, userDoctorPW2));
+        assertFalse(UserService.createUser(userDoctor2, userDoctorPW2));
      }
 
      public static void testLogin() {
 
         System.out.println("testLogin");
 
-        tokenPatientOne = IAMService.login(userPatientOneId, userPatientOnePW);
-        assertNotNull(tokenPatientOne);
+        tokenPatient1 = IAMService.login(userPatientId1, userPatientPW1);
+        assertNotNull(tokenPatient1);
          assertNull(IAMService.login("noone", "nopasswd"));
-         assertNull(IAMService.login(userPatientOneId, "wrongpasswd"));
+         assertNull(IAMService.login(userPatientId1, "wrongpasswd"));
 
-         tokenPatientTwo = IAMService.login(userPatientTwoId, userPatientTwoPW);
-         assertNotNull(tokenPatientTwo);
+         tokenPatient2 = IAMService.login(userPatientId2, userPatientPW2);
+         assertNotNull(tokenPatient2);
 
-         tokenDoctorOne= IAMService.login(userDoctorOneId, userDoctorOnePW);
-         assertNotNull(tokenDoctorOne);
+         tokenDoctor1 = IAMService.login(userDoctorId1, userDoctorPW1);
+         assertNotNull(tokenDoctor1);
 
-         tokenDoctorTwo= IAMService.login(userDoctorTwoId, userDoctorTwoPW);
-         assertNotNull(tokenDoctorTwo);
+         tokenDoctor2 = IAMService.login(userDoctorId2, userDoctorPW2);
+         assertNotNull(tokenDoctor2);
      }
 
+     public static void testAddPatient() {
+
+         System.out.println("testAddPatient");
+
+         //doc1 can NOT view patient1 profile
+         //but can after adding patient1 as her patient
+         //but still can NOT view patient2's since not her patient
+         assertNull(UserService.retrieveUser(tokenDoctor1, userPatientId1));
+         assertTrue(DoctorPatientService.addPatient(tokenDoctor1, userPatientId1));
+         assertNotNull(UserService.retrieveUser(tokenDoctor1, userPatientId1));
+         assertNull(UserService.retrieveUser(tokenDoctor1, userPatientId2));
+
+         //doc2 can NOT view patient2 profile
+         //but can after adding patient2 as her patient
+         //but still can NOT view patient1's since not her patient
+         assertNull(UserService.retrieveUser(tokenDoctor2, userPatientId2));
+         assertTrue(DoctorPatientService.addPatient(tokenDoctor2, userPatientId2));
+         assertNotNull(UserService.retrieveUser(tokenDoctor2, userPatientId2));
+         assertNull(UserService.retrieveUser(tokenDoctor2, userPatientId1));
+     }
+
+     public static void testRetrieveUpdatePatient() {
+         System.out.println("testRetrieveUpdatePatient");
+
+
+     }
 
 }
