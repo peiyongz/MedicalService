@@ -1,6 +1,9 @@
 package store;
 
+import model.Audit;
 import model.User;
+import security.Ops;
+import security.Resource;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -8,44 +11,47 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- *  This class mock the persistent layer functionalities
- *
- *  Operations on  Provider-Patient
+ *  An implementation of the persistent layer for Doctor-Patient in lieu of RDBMS
  *
  */
 public class DoctorPatientStore {
 
-    // mock Doctor-Patient Table
-    // key: PROVIDER
+    // Doctor-Patient Table
+    // key: Doctor
     // value: set of PATIENT
-    private static Map<String, Set<String>> providerPatientMap;
+    private static Map<String, Set<String>> doctorPatientMap;
 
     static {
-        providerPatientMap = new HashMap<String, Set<String>>();
+        doctorPatientMap = new HashMap<String, Set<String>>();
     }
 
     /**
         "INSERT PROVIDER_PATIENT ..."
     */
-    public static void addPatient(String providerId, String patientId) {
+    public static void addPatient(String doctorId, String patientId) {
 
-        if (!providerPatientMap.containsKey(providerId)) {
+        if (!doctorPatientMap.containsKey(doctorId)) {
             Set<String> patients = new HashSet<String>();
             patients.add(patientId);
-            providerPatientMap.put(providerId, patients);
+            doctorPatientMap.put(doctorId, patients);
         } else {
-            Set<String> patients = providerPatientMap.get(providerId);
+            Set<String> patients = doctorPatientMap.get(doctorId);
             patients.add(patientId);
         }
+
+        addAudit(doctorId, Ops.CREATE.name());
     }
 
 
     /**
          "SELECT * FROM PROVIDER_PATIENT WHERE ..."
      */
-    public static boolean IsDocPatient(String  providerId, String patientId) {
-        final Set<String> patients = providerPatientMap.get(providerId);
+    public static boolean IsDocPatient(String doctorId, String patientId) {
+        final Set<String> patients = doctorPatientMap.get(doctorId);
         return patients == null ? false : patients.contains(patientId);
     }
 
+    private static void addAudit(String doctorId, String ops) {
+        AuditStore.add(new Audit(Resource.DOCTOR_PATIENT.name(), ops, doctorId, doctorId, doctorId));
+    }
 }

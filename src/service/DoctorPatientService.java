@@ -2,6 +2,7 @@ package service;
 
 import store.DoctorPatientStore;
 import security.*;
+import store.UserStore;
 
 /**
  *   Doctor Patient Service
@@ -12,7 +13,8 @@ public class DoctorPatientService {
 
     public static boolean addPatient(Token token, String patientId) {
 
-        if (!token.authorize(Resource.PROVIDER_PATIENT, Ops.CREATE)) {
+        if (!token.authorize(Resource.DOCTOR_PATIENT, Ops.CREATE) ||
+            !UserStore.isPatient(patientId)) {
             return false;
         }
 

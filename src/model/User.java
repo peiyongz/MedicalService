@@ -66,6 +66,10 @@ public class User {
        this.weight=weight;
     }
 
+    public String getKey() {
+        return getUserId();
+    }
+
     public String getUserId() {
         return userId;
     }

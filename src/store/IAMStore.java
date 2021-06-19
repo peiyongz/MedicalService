@@ -20,43 +20,43 @@ public class IAMStore {
     /**
      *    Resource                  Role         Create   Retrieve   Update   Delete
      *    ===========================================================================
-     *    User                      Provider      1          1         1        1
+     *    User                      Doctor        1          1         1        1
      *    User                      Patient       1          1         1        1
      *
-     *    Visit                     Provider      1          1         1        1
+     *    Visit                     Doctor        1          1         1        1
      *    Visit                     Patient       0          1         0        0
      *
-     *    Provider_Patient          Provider      1          1         1        1
-     *    Provider_Patient          Patient       0          0         0        0
+     *    Doctor_Patient            Doctor        1          1         1        1
+     *    Doctor_Patient            Patient       0          0         0        0
      *
-     *    Medical_Study             Provider      1          1         1        1
-     *    Medical_Study             Patient       0          0         0        0
+     *    Medical_Study             Doctor        1          1         1        1
+     *    Medical_Study             Patient       0          1         0        0
      *
-     *    Audit                     Provider      0          1         0        0
+     *    Audit                     Doctor        0          1         0        0
      *    Audit                     Patient       0          1         0        0
      */
 
     static {
         roleResourcePermMap = new HashMap<IAMRole, Map<Resource, Permission>>();
 
-        Map<Resource, Permission> providerMap = new HashMap<Resource, Permission>();
-        roleResourcePermMap.put(IAMRole.DOCTOR, providerMap);
+        Map<Resource, Permission> DoctorMap = new HashMap<Resource, Permission>();
+        roleResourcePermMap.put(IAMRole.DOCTOR, DoctorMap);
         Map<Resource, Permission> patientMap = new HashMap<Resource, Permission>();
         roleResourcePermMap.put(IAMRole.PATIENT, patientMap);
 
-        providerMap.put(Resource.USER, Permission.PERMISSION_ALL);
+        DoctorMap.put(Resource.USER, Permission.PERMISSION_ALL);
         patientMap.put(Resource.USER, Permission.PERMISSION_ALL);
 
-        providerMap.put(Resource.VISIT, Permission.PERMISSION_ALL);
+        DoctorMap.put(Resource.VISIT, Permission.PERMISSION_ALL);
         patientMap.put(Resource.VISIT, Permission.PERMISSION_RETRIEVE_ONLY);
 
-        providerMap.put(Resource.PROVIDER_PATIENT, Permission.PERMISSION_ALL);
-        patientMap.put(Resource.PROVIDER_PATIENT, Permission.PERMISSION_NONE);
+        DoctorMap.put(Resource.DOCTOR_PATIENT, Permission.PERMISSION_ALL);
+        patientMap.put(Resource.DOCTOR_PATIENT, Permission.PERMISSION_NONE);
 
-        providerMap.put(Resource.MEDICAL_STUDY, Permission.PERMISSION_ALL);
-        patientMap.put(Resource.MEDICAL_STUDY, Permission.PERMISSION_NONE);
+        DoctorMap.put(Resource.MEDICAL_STUDY, Permission.PERMISSION_ALL);
+        patientMap.put(Resource.MEDICAL_STUDY, Permission.PERMISSION_RETRIEVE_ONLY);
 
-        providerMap.put(Resource.AUDIT, Permission.PERMISSION_RETRIEVE_ONLY);
+        DoctorMap.put(Resource.AUDIT, Permission.PERMISSION_RETRIEVE_ONLY);
         patientMap.put(Resource.AUDIT, Permission.PERMISSION_RETRIEVE_ONLY);
 
     }

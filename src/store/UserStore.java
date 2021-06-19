@@ -1,8 +1,14 @@
 package store;
 
+import model.Audit;
 import model.User;
 import java.util.Map;
 import java.util.HashMap;
+
+import security.IAMRole;
+import security.Ops;
+import security.Resource;
+import store.AuditStore;
 
 /**
  *  An implementation of the persistent layer for User in lieu of RDBMS
@@ -29,6 +35,7 @@ public class UserStore {
 
         userStore.put(user.getUserId(), user);
         passwordStore.put(user.getUserId(), password);
+        addAudit(user, Ops.CREATE.name());
         return true;
     }
 
@@ -43,6 +50,7 @@ public class UserStore {
 
         userStore.put(user.getUserId(), user);
         passwordStore.put(user.getUserId(), password);
+        addAudit(user, Ops.UPDATE.name());
         return true;
     }
 
@@ -50,16 +58,21 @@ public class UserStore {
        "SELECT * FROM USER WHERE userId = <user_id>"
      */
     public static User retrieveUser(String userId) {
+        //we don't audit retrieval
         return userStore.get(userId);
     }
 
     /**
-     *   To verify if a user w/ given password exists
+     *   To check if a user a patient
      *
      * @param userId
-     * @param password
      * @return
      */
+
+    public static boolean isPatient(String userId) {
+        return (userStore.containsKey(userId) && userStore.get(userId).getIamRole() == IAMRole.PATIENT);
+    }
+
     public static boolean verifyUser(String userId, String password) {
 
         if (userId == null || userId.isEmpty() || password == null || password.isEmpty()) {
@@ -67,5 +80,9 @@ public class UserStore {
         }
 
         return (userStore.get(userId) == null) ? false : password.compareToIgnoreCase(passwordStore.get(userId)) == 0;
+    }
+
+    private static void addAudit(User user, String ops) {
+        AuditStore.add(new Audit(Resource.USER.name(), ops, user.getKey(), user.toString(), user.getUserId()));
     }
 }

@@ -22,11 +22,12 @@ public class UserService {
      * @return
      */
     public static boolean createUser(User user, String password) {
+        //User signup does not need auth
         return UserStore.createUser(user, password);
     }
 
     /**
-     *   Get a User for UI to present
+     *   Get a User
      *
      * @param userId
      * @return
@@ -63,10 +64,6 @@ public class UserService {
      * @return
      */
     private static boolean isPermitted(Token token, String userId, Ops ops) {
-
-        if (!token.authorize(Resource.PROVIDER_PATIENT, ops)) {
-            return false;
-        }
 
         // patient/doctor is allowed for their own records
         if (userId.compareToIgnoreCase(token.getUserId()) == 0) {

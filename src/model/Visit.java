@@ -1,12 +1,13 @@
 package model;
 
+import store.VisitStore;
+
 import java.util.Date;
 
 public class Visit {
 
-    /*
-       Visit Primary Key: doctorId + patientId + visitTime
-     */
+    private Integer visitId;
+
     private String doctorId;        // a UserId whose UserType is  DOCTOR
     private String patientId;       // a UserId whose UserType is  PATIENT
     private Date   visitTime;       // visit time
@@ -34,6 +35,7 @@ public class Visit {
                  int    height,
                  int    weight
                 ) {
+        this.visitId = VisitStore.getVisitId();
         this.doctorId  = doctorId;
         this.patientId = patientId;
         this.visitTime = visitTime;
@@ -51,11 +53,25 @@ public class Visit {
     }
 
     public String getKey() {
-        return getVisitKey(doctorId, patientId,  visitTime);
+        return Integer.toString(getId());
+    }
+
+    public int getId() {
+        return this.visitId;
+    }
+
+    public String getDoctorId() {
+        return this.doctorId;
+    }
+
+    public String getPatientId() {
+        return this.patientId;
     }
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
+        sb.append("VisitId: ");
+        sb.append(this.visitId);
         sb.append("DoctorId: ");
         sb.append(this.doctorId);
         sb.append("PatientId: ");
@@ -81,7 +97,4 @@ public class Visit {
         return sb.toString();
     }
 
-    public static String getVisitKey(String doctorId, String patientId, Date visitTime) {
-        return doctorId + "_" + patientId + "_" + visitTime;
-    }
 }

@@ -3,7 +3,7 @@ package security;
 public enum Resource {
     USER,
     VISIT,
-    PROVIDER_PATIENT,
+    DOCTOR_PATIENT,
     AUDIT,
     MEDICAL_STUDY
 }
