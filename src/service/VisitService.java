@@ -44,7 +44,7 @@ public class VisitService {
     }
 
     /**
-     *   Get Visits
+     *   Patient Health Report
      */
     public static List<Visit> retrieveVisits(Token token, String patientId) {
 
