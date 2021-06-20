@@ -21,6 +21,7 @@ public class Main {
         runCreateVisit();
         runCheckAudit();
         runMedicalStudy();
+        runHealthReport();
     }
 
 
@@ -96,8 +97,6 @@ public class Main {
      */
     public static void runCreatePatient() {
 
-        System.out.println("runCreatePatient");
-
         userPatient1 = new User(userPatientId1, "Patient", "One" , IAMRole.PATIENT,
                                 Gender.MALE, new Date(1992, 1, 1), "206-456-1111", "patientone@yahoo.com",
                 "1110 234TH PL SE Bellevue WA 98006");
@@ -111,14 +110,14 @@ public class Main {
         //Allow create once
         assertTrue(UserService.createUser(userPatient2, userPatientPW2));
         assertFalse(UserService.createUser(userPatient2, userPatientPW2));
+
+        System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName() + " passed successfully");
     }
 
     /**
      *  Doctor can create her own account
      */
      public static void runCreateDoctor() {
-
-        System.out.println("runCreateProvider");
 
         userDoctor1 = new User(userDoctorId1, "Doctor", "One", IAMRole.DOCTOR,
                                Gender.MALE, new Date(1991, 1, 1),"206-123-1111", "doctorOne@yahoo.com",
@@ -133,11 +132,11 @@ public class Main {
          //Allow create once
         assertTrue(UserService.createUser(userDoctor2, userDoctorPW2));
         assertFalse(UserService.createUser(userDoctor2, userDoctorPW2));
+
+        System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName() + " passed successfully");
      }
 
      public static void runLogin() {
-
-        System.out.println("runLogin");
 
          tokenPatient1 = IAMService.login(userPatientId1, userPatientPW1);
          assertNotNull(tokenPatient1);
@@ -152,11 +151,11 @@ public class Main {
 
          tokenDoctor2 = IAMService.login(userDoctorId2, userDoctorPW2);
          assertNotNull(tokenDoctor2);
+
+         System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName() + " passed successfully");
      }
 
      public static void runAddPatient() {
-
-         System.out.println("runAddPatient");
 
          //doc1 can NOT view patient1 profile
          //but can after adding patient1 as her patient
@@ -178,11 +177,11 @@ public class Main {
          assertTrue(DoctorPatientService.addPatient(tokenDoctor2, userPatientId2));
          assertNotNull(UserService.retrieveUser(tokenDoctor2, userPatientId2));
          assertNull(UserService.retrieveUser(tokenDoctor2, userPatientId1));
+
+         System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName() + " passed successfully");
      }
 
      public static void runPatientViewUpdate() {
-
-         System.out.println("runPatientViewUpdate");
 
          //patient can view her own profile
          User patient1 = UserService.retrieveUser(tokenPatient1, userPatientId1);
@@ -196,13 +195,10 @@ public class Main {
          User patient2 = UserService.retrieveUser(tokenPatient1, userPatientId2);
          assertNull(patient2);
 
-         //patient can't view others visit
-
+         System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName() + " passed successfully");
      }
 
      public static void runCreateVisit() {
-
-         System.out.println("runCreateVisit");
 
          // patient1 is doc1's patient
          // doc1 can create visit for patient1
@@ -210,7 +206,7 @@ public class Main {
 
          int auditCount = AuditStore.count();
          final Visit visit1 = new Visit(userDoctorId1, userPatientId1, new Date(), "diagnostics 1", "treatment 1",
-                 80, 120, 60, 12 * 6, 150);
+                 70 ,120, 60, 72, 150);
          final int doc1patient1visit1Id = visit1.getId();
          assertTrue(VisitService.createVisit(tokenDoctor1, visit1));
          //create visit has audit log
@@ -218,7 +214,7 @@ public class Main {
 
          auditCount = AuditStore.count();
          final Visit visit2 = new Visit(userDoctorId1, userPatientId1, new Date(), "diagnostics 2", "treatment 2",
-                 80, 120, 60, 12 * 6, 150);
+                 72, 122, 62, 71, 152);
          final int doc1patient1visit2Id = visit2.getId();
          assertTrue(VisitService.createVisit(tokenDoctor1, visit2));
          //create visit has audit log
@@ -262,14 +258,13 @@ public class Main {
          assertNull(VisitService.retrieveVisits(tokenDoctor1, userPatientId2));
 
          //patient1 is NOT doc2's patient
-         // doc2 can NOT retrieve patient1' visit
+         //doc2 can NOT retrieve patient1' visit
          assertNull(VisitService.retrieveVisits(tokenDoctor2, userPatientId1));
 
+         System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName() + " passed successfully");
      }
 
     public static void runCheckAudit() {
-
-        System.out.println("runCheckAudit");
 
         int auditCount = AuditStore.count();
 
@@ -309,11 +304,10 @@ public class Main {
         UserService.updateUser(tokenDoctor3, userDoctor3, "new pass");
         assertEquals(auditCount+1, AuditStore.count());
 
+        System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName() + " passed successfully");
     }
 
     public static void runMedicalStudy() {
-
-        System.out.println("runCheckAudit");
 
         //doctor can create a new medical study
         final MedicalStudy ms1 = new MedicalStudy("md1", "md1 desc", new Date(), new Date());
@@ -341,5 +335,25 @@ public class Main {
         assertEquals(3, MedicalStudyService.partientParticiated(tokenPatient1, ms1.getId()).size());
         assertEquals(1, MedicalStudyService.partientParticiated(tokenPatient1, ms2.getId()).size());
 
+        System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName() + " passed successfully");
+
+    }
+
+    public static void runHealthReport() {
+
+        VisitService.createVisit(tokenDoctor1, new Visit(userDoctorId1, userPatientId1, new Date(),
+                                              "diagnostics 3", "treatment 3",
+                                                     74, 124, 64, 71, 154));
+        VisitService.createVisit(tokenDoctor1, new Visit(userDoctorId1, userPatientId1, new Date(),
+                                               "diagnostics 4", "treatment 4",
+                                                     76, 126, 66, 71, 156));
+
+        VisitService.createVisit(tokenDoctor1, new Visit(userDoctorId1, userPatientId1, new Date(),
+                                              "diagnostics 5", "treatment 5",
+                                                     78, 128, 68, 71, 158));
+
+        System.out.println(ReportService.healthReport(tokenDoctor1, userPatientId1, new Date()));
+
+        System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName() + " passed successfully");
     }
 }

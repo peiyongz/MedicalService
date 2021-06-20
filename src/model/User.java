@@ -76,6 +76,20 @@ public class User {
 
     public IAMRole getIamRole() { return iamRole; };
 
+    public String getFirstName() { return firstName;}
+
+    public String getLastName() { return lastName;}
+
+    public Date getBirthday() { return DOB;}
+
+    public String getGender() { return gender.name();}
+
+    public int getHeight() { return height;}
+
+    public int getWeight() { return weight;}
+
+    public String getPhone() { return phone;}
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("UserId: ");

@@ -1,14 +1,16 @@
 package service;
 
 import model.Visit;
+import model.User;
+
 import security.IAMRole;
 import security.Ops;
 import security.Resource;
 import security.Token;
 import store.DoctorPatientStore;
+import store.UserStore;
 import store.VisitStore;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,23 +22,36 @@ import java.util.List;
 public class VisitService {
 
     /**
-     *   Create a Visit
+     *    Create a visit
+     *
+     * @param requesterToken
+     * @param visit
+     * @return
      */
-    public static boolean createVisit(Token token, Visit visit) {
+    public static boolean createVisit(Token requesterToken, Visit visit) {
 
-        if (isPermitted(token, visit.getPatientId(), Ops.RETRIEVE)) {
+        if (authorize(requesterToken, visit.getPatientId(), Ops.RETRIEVE)) {
+            updateUserBio(visit);
             return VisitStore.createVisit(visit);
         }
 
         return false;
     }
 
-    public static Visit retrieveVisit(Token token, int visitId) {
+    /**
+     *
+     *     Retrieve a visit
+     *
+     * @param requesterToken
+     * @param visitId
+     * @return
+     */
+    public static Visit retrieveVisit(Token requesterToken, int visitId) {
 
         final Visit visit = VisitStore.retrieveVisit(visitId);
 
         if (visit != null &&
-            isPermitted(token, visit.getPatientId(), Ops.RETRIEVE)) {
+            authorize(requesterToken, visit.getPatientId(), Ops.RETRIEVE)) {
             return visit;
         }
 
@@ -44,50 +59,70 @@ public class VisitService {
     }
 
     /**
-     *   Patient Health Report
+     *
+     *    Retrieve visits
+     *
+     * @param requesterToken
+     * @param patientId
+     * @return
      */
-    public static List<Visit> retrieveVisits(Token token, String patientId) {
+    public static List<Visit> retrieveVisits(Token requesterToken, String patientId) {
 
-        if (isPermitted(token, patientId, Ops.RETRIEVE)) {
-            return VisitStore.retrieveVisits(token.getUserId(), patientId);
+        if (authorize(requesterToken, patientId, Ops.RETRIEVE)) {
+            return VisitStore.retrieveVisits(requesterToken.getUserId(), patientId);
         }
 
         return null;
     }
 
     /**
-     *   Update a Visit
+     *     Update visit
      *
+     * @param requesterToken
      * @param visit
+     * @return
      */
-    public static boolean updateVisit(Token token, Visit visit) {
+    public static boolean updateVisit(Token requesterToken, Visit visit) {
 
-        if (isPermitted(token, visit.getPatientId(), Ops.UPDATE)) {
+        if (authorize(requesterToken, visit.getPatientId(), Ops.UPDATE)) {
+            updateUserBio(visit);
             return VisitStore.updateVisit(visit);
         }
 
         return false;
     }
 
+    private static void updateUserBio(Visit visit) {
+
+        final User patient = UserStore.retrieveUser(visit.getPatientId());
+        patient.updateBio(visit.getBloodPressureLow(),
+                          visit.getBloodPressureHigh(),
+                          visit.getHeartRateInMinute(),
+                          visit.getHeight(),
+                          visit.getWeight());
+    }
+
     /**
+     *    Authorization
      *
-     * @param token
+     * @param requesterToken
      * @param patientId
+     * @param ops
      * @return
      */
-    private static boolean isPermitted(Token token, String patientId, Ops ops) {
+    private static boolean authorize(Token requesterToken, String patientId, Ops ops) {
 
-        if (!token.authorize(Resource.DOCTOR_PATIENT, ops)) {
+        if (!requesterToken.authorize(Resource.DOCTOR_PATIENT, ops)) {
             return false;
         }
 
         // patient is allowed for her own visits
-        if (patientId.compareToIgnoreCase(token.getUserId()) == 0) {
+        if (patientId.compareToIgnoreCase(requesterToken.getUserId()) == 0) {
             return true;
         }
 
         // doctor is allowed on her patient's
-        return token.getIamRole().equals(IAMRole.DOCTOR) &&
-                DoctorPatientStore.IsDocPatient(token.getUserId(), patientId);
+        return requesterToken.getIamRole().equals(IAMRole.DOCTOR) &&
+               DoctorPatientStore.IsDocPatient(requesterToken.getUserId(), patientId);
     }
 }

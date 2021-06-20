@@ -2,7 +2,6 @@ package service;
 
 import model.User;
 import security.Ops;
-import security.Resource;
 import store.DoctorPatientStore;
 import store.UserStore;
 import security.Token;
@@ -16,41 +15,47 @@ import security.IAMRole;
 public class UserService {
 
     /**
-     *   Create a user
+     *
+     *    Create user
      *
      * @param user
+     * @param password
      * @return
      */
     public static boolean createUser(User user, String password) {
-        //User signup does not need auth
+        //User creation does not need authorization
         return UserStore.createUser(user, password);
     }
 
     /**
-     *   Get a User
      *
+     *    Retrieve user
+     *
+     * @param requesterToken
      * @param userId
      * @return
      */
-    public static User retrieveUser(Token token, String userId) {
+    public static User retrieveUser(Token requesterToken, String userId) {
 
-        if (isPermitted(token, userId, Ops.RETRIEVE)) {
+        if (authorize(requesterToken, userId, Ops.RETRIEVE)) {
             return UserStore.retrieveUser(userId);
         }
 
         return null;
-
     }
 
     /**
-     *  Update a User
      *
+     *    Update user
+     *
+     * @param token
      * @param user
+     * @param password
      * @return
      */
     public static boolean updateUser(Token token, User user, String password) {
 
-        if (isPermitted(token, user.getUserId(), Ops.RETRIEVE)) {
+        if (authorize(token, user.getUserId(), Ops.RETRIEVE)) {
             return UserStore.updateUser(user, password);
         }
 
@@ -59,11 +64,14 @@ public class UserService {
 
     /**
      *
+     *    Authorization
+     *
      * @param token
      * @param userId
+     * @param ops
      * @return
      */
-    private static boolean isPermitted(Token token, String userId, Ops ops) {
+    private static boolean authorize(Token token, String userId, Ops ops) {
 
         // patient/doctor is allowed for their own records
         if (userId.compareToIgnoreCase(token.getUserId()) == 0) {

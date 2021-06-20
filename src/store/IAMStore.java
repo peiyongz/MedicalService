@@ -34,6 +34,10 @@ public class IAMStore {
      *
      *    Audit                     Doctor        0          1         0        0
      *    Audit                     Patient       0          1         0        0
+     *
+     *    Report                    Doctor        1          0         0        0
+     *    Report                    Patient       0          0         0        0
+     *
      */
 
     static {
@@ -59,6 +63,8 @@ public class IAMStore {
         DoctorMap.put(Resource.AUDIT, Permission.PERMISSION_RETRIEVE_ONLY);
         patientMap.put(Resource.AUDIT, Permission.PERMISSION_RETRIEVE_ONLY);
 
+        DoctorMap.put(Resource.REPORT, Permission.PERMISSION_ALL);
+        patientMap.put(Resource.REPORT, Permission.PERMISSION_NONE);
     }
 
     public static Token getToken(String userId) {

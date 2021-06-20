@@ -68,30 +68,40 @@ public class Visit {
         return this.patientId;
     }
 
+    public int getBloodPressureLow() { return this.bloodPressureLow; }
+
+    public int getBloodPressureHigh() { return this.bloodPressureHigh; }
+
+    public int getHeartRateInMinute() { return this.heartRateInMinute; }
+
+    public int getHeight() { return this.height; }
+
+    public int getWeight() { return this.weight; }
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("VisitId: ");
         sb.append(this.visitId);
-        sb.append("DoctorId: ");
+        sb.append("\nDoctorId: ");
         sb.append(this.doctorId);
-        sb.append("PatientId: ");
+        sb.append("\nPatientId: ");
         sb.append(this.patientId);
-        sb.append("VisitTime: ");
+        sb.append("\nVisitTime: ");
         sb.append(this.visitTime);
-        sb.append("Diagnostics: ");
+        sb.append("\nDiagnostics: ");
         sb.append(this.diagnostics);
-        sb.append("Treatment: ");
+        sb.append("\nTreatment: ");
         sb.append(this.treatment);
-        sb.append("Phone: ");
-        sb.append("Blood Pressure Low: ");
+        sb.append("\nPhone: ");
+        sb.append("\nBlood Pressure Low: ");
         sb.append(this.bloodPressureLow);
-        sb.append("Blood Pressure High: ");
+        sb.append("\nBlood Pressure High: ");
         sb.append(this.bloodPressureHigh);
-        sb.append("Heart Rate: ");
+        sb.append("\nHeart Rate: ");
         sb.append(this.heartRateInMinute);
-        sb.append("Height: ");
+        sb.append("\nHeight: ");
         sb.append(this.height);
-        sb.append("Weight: ");
+        sb.append("\nWeight: ");
         sb.append(this.weight);
 
         return sb.toString();

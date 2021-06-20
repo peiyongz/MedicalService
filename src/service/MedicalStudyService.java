@@ -13,36 +13,40 @@ import java.util.Set;
  */
 public class MedicalStudyService {
 
-    public static boolean createStudy(Token token, MedicalStudy study ) {
+    public static boolean createStudy(Token requesterToken, MedicalStudy study ) {
 
-        if (!token.authorize(Resource.MEDICAL_STUDY, Ops.CREATE)) {
+        if (!authorize(requesterToken, Ops.CREATE)) {
             return false;
         }
 
         return MedicalStudyStore.createStudy(study);
     }
 
-    public static boolean participateStudy(Token token, int studyId) {
+    public static boolean participateStudy(Token requesterToken, int studyId) {
 
        //every one can participate a study
-        return MedicalStudyStore.participateStudy(studyId, token.getUserId());
+        return MedicalStudyStore.participateStudy(studyId, requesterToken.getUserId());
     }
 
-    public static Set<Integer> StudyParticipated(Token token) {
+    public static Set<Integer> StudyParticipated(Token requesterToken) {
 
-        if (!token.authorize(Resource.MEDICAL_STUDY, Ops.RETRIEVE)) {
+        if (!requesterToken.authorize(Resource.MEDICAL_STUDY, Ops.RETRIEVE)) {
             return null;
         }
 
-        return MedicalStudyStore.studyParticpated(token.getUserId());
+        return MedicalStudyStore.studyParticpated(requesterToken.getUserId());
     }
 
-    public static Set<String> partientParticiated(Token token, Integer studyId) {
+    public static Set<String> partientParticiated(Token requesterToken, Integer studyId) {
 
-        if (!token.authorize(Resource.MEDICAL_STUDY, Ops.RETRIEVE)) {
+        if (!requesterToken.authorize(Resource.MEDICAL_STUDY, Ops.RETRIEVE)) {
             return null;
         }
 
         return MedicalStudyStore.partientParticiated(studyId);
+    }
+
+    private static boolean authorize(Token requesterToken, Ops ops) {
+        return requesterToken.authorize(Resource.MEDICAL_STUDY, ops);
     }
 }

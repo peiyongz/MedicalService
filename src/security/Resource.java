@@ -5,5 +5,6 @@ public enum Resource {
     VISIT,
     DOCTOR_PATIENT,
     AUDIT,
-    MEDICAL_STUDY
+    MEDICAL_STUDY,
+    REPORT
 }

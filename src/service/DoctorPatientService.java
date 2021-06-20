@@ -11,14 +11,35 @@ import store.UserStore;
  */
 public class DoctorPatientService {
 
-    public static boolean addPatient(Token token, String patientId) {
+    /**
+     *    Add a patient
+     *
+     * @param requesterToken
+     * @param patientId
+     * @return
+     */
+    public static boolean addPatient(Token requesterToken, String patientId) {
 
-        if (!token.authorize(Resource.DOCTOR_PATIENT, Ops.CREATE) ||
-            !UserStore.isPatient(patientId)) {
+        if (!authorize(requesterToken, patientId, Ops.CREATE)) {
             return false;
         }
 
-        DoctorPatientStore.addPatient(token.getUserId(), patientId);
+        DoctorPatientStore.addPatient(requesterToken.getUserId(), patientId);
         return true;
+    }
+
+    /**
+     *
+     *    Authorization
+     *
+     * @param requesterToken
+     * @param patientId
+     * @param ops
+     * @return
+     */
+    private static boolean authorize(Token requesterToken, String patientId, Ops ops) {
+        return requesterToken.authorize(Resource.DOCTOR_PATIENT, ops) &&
+               UserStore.isPatient(patientId);
+
     }
 }
