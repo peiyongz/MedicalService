@@ -100,7 +100,7 @@ public class ReportService {
         sb.append("\n\nStats \n\n");
         printStats(getStats(bloodPressureLowList), sb,"Blood Pressure Low " );
         printStats(getStats(bloodPressureHighList), sb,"Blood Pressure High " );
-        printStats(getStats(heartRateList), sb,"Heart Rate" );
+        printStats(getStats(heartRateList), sb,"Heart Rate " );
 
         sb.append("\n\nBMI \n\n");
         for (float f : BMIList) {
@@ -126,19 +126,20 @@ public class ReportService {
             return stats;
         }
 
-        Collections.sort(numbers);   //in ascending order
+        //Sort data in ascending order
+        Collections.sort(numbers);
 
         //min
         stats.add(0, numbers.get(0).floatValue());
+
         //max
         stats.add(1, numbers.get(numbers.size()-1).floatValue());
 
+        //mean
         float sum = 0;
         for (int n : numbers) {
             sum+=n;
         }
-
-        //mean
         stats.add(2, sum/numbers.size());
 
         //median
@@ -157,11 +158,11 @@ public class ReportService {
         sb.append(msg);
         sb.append("Min: ");
         sb.append(stats.get(0));
-        sb.append("Max: ");
+        sb.append(" Max: ");
         sb.append(stats.get(1));
-        sb.append("Mean: ");
+        sb.append(" Mean: ");
         sb.append(stats.get(2));
-        sb.append("Median: ");
+        sb.append(" Median: ");
         sb.append(stats.get(3));
         sb.append("\n");
     }
@@ -177,7 +178,7 @@ public class ReportService {
      */
     private static boolean authorize(Token requesterToken, String patientId, Ops ops) {
 
-        if (!requesterToken.authorize(Resource.DOCTOR_PATIENT, ops)) {
+        if (!requesterToken.authorize(Resource.REPORT, ops)) {
             return false;
         }
 
